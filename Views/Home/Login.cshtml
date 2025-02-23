@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Login Page";
+}
+
+@model NMS.Models.SystemAccount
+
+<div class="container mt-5">
+    <div>
+        <img src="~//logo_fpt.png" class="img-fluid" style="max-width: 200px;" />
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Admin Login</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                        @if (ViewBag.Message != null)
+                        {
+                            <div class="alert alert-danger">
+                                @ViewBag.Message
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            @Html.LabelFor(a => a.AccountEmail, new { @class = "form-label" })
+                            @Html.TextBoxFor(a => a.AccountEmail, new { @class = "form-control", placeholder = "Enter your email" })
+                            @Html.ValidationMessageFor(a => a.AccountEmail, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(a => a.AccountPassword, new { @class = "form-label" })
+                            @Html.PasswordFor(a => a.AccountPassword, new { @class = "form-control", placeholder = "Enter your password" })
+                            @Html.ValidationMessageFor(a => a.AccountPassword, "", new { @class = "text-danger" })
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
