@@ -60,6 +60,17 @@
     .category-list::-webkit-scrollbar-track {
         background-color: #f1f1f1;
     }
+
+    .active-category, .active-tag {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .category-item, .tag-item {
+        white-space: nowrap;
+    }
+
 </style>
 
 <div class="container mt-4">
@@ -99,6 +110,33 @@
         </div>
     </div>
 
+    <div class="d-flex align-items-center mb-3">
+        <div class="me-3 fw-bold">Tags:</div>
+        <div class="tag-list d-flex flex-nowrap overflow-auto">
+            <!-- "All" Tag Button -->
+            <a class="btn btn-outline-secondary me-2 tag-item @(ViewBag.SelectedTagId == null ? "active-tag" : "")"
+               asp-action="Index"
+               asp-route-tag=""
+               asp-route-categoryId="@ViewBag.SelectedCategoryId">
+                All
+            </a>
+
+            <!-- Dynamically Generated Tag Buttons -->
+            @if (ViewBag.Tags != null)
+            {
+                foreach (var tag in ViewBag.Tags)
+                {
+                    <a class="btn btn-outline-secondary me-2 tag-item @(ViewBag.SelectedTagId == tag.TagId ? "active-tag" : "")"
+                       asp-action="Index"
+                       asp-route-tag="@tag.TagId"
+                       asp-route-categoryId="@ViewBag.SelectedCategoryId">
+                        @tag.TagName
+                    </a>
+                }
+            }
+        </div>
+    </div>
+
     <!-- News Articles Grid -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var item in Model)
@@ -113,6 +151,22 @@
                                 By @item.CreatedBy?.AccountName |
                                 @item.CreateDate
                             </small>
+                        </p>
+                        <p>
+                            <span class="col-sm-3"><strong>Tags:</strong></span>
+                            <span class="col-sm-9">
+                                @if (item.Tags != null && item.Tags.Any())
+                                {
+                                    @foreach (var tag in item.Tags)
+                                    {
+                                        <span class="badge bg-primary me-1">@tag.TagName</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No tags available</span>
+                                }
+                            </span>
                         </p>
                         <p class="card-text"><strong>@item.Headline</strong></p>
                         <p class="card-text">@item.NewsContent</p>

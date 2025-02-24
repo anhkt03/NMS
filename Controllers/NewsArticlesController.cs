@@ -19,18 +19,25 @@ namespace NMS.Controllers
         }
 
         // GET: NewsArticles
-        public async Task<IActionResult> Index(int? categoryId)
+        public async Task<IActionResult> Index(int? categoryId, int? tag)
         {
             var nmsContext = _context.NewsArticles
                 .Include(n => n.Category)
                 .Include(n => n.CreatedBy)
                 .Include(n => n.UpdateBy)
+                .Include(n => n.Tags)
                 .Where(n => n.NewsStatus == true);
 
             if (categoryId.HasValue)
             {
                 nmsContext = nmsContext.Where(n => n.Category.CategoryId == categoryId.Value);
                 ViewBag.SelectedCategoryId = categoryId;
+            }
+
+            if(tag.HasValue)
+            {
+                nmsContext = nmsContext.Where(n => n.Tags.Any(t => t.TagId == tag.Value));
+                ViewBag.SelectedTagId = tag;
             }
 
             var newsArticles = await nmsContext
@@ -47,6 +54,13 @@ namespace NMS.Controllers
                     NewsSource = n.NewsSource,
                 }).ToListAsync();
 
+            var tags = await _context.Tags
+                .Select(t => new Tag
+                {
+                    TagId = t.TagId,
+                    TagName = t.TagName
+                }).ToListAsync();
+
             var categories = await _context.Categories
                 .Where(c => c.IsActive == true)
                 .Select(c => new Category
@@ -57,6 +71,7 @@ namespace NMS.Controllers
 
             ViewBag.NewsArticles = newsArticles;
             ViewBag.Category = categories;
+            ViewBag.Tags = tags;
 
             return View(newsArticles);
         }
