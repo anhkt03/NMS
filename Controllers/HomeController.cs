@@ -60,9 +60,10 @@ namespace NMS.Controllers
                 if (user != null)
                 {
                     HttpContext.Session.SetString("role", user.AccountRole.ToString());
+                    HttpContext.Session.SetString("user", user.AccountName.ToString());
 
                     // staff
-                    if(user.AccountRole == 1)
+                    if (user.AccountRole == 1)
                     {
                         return RedirectToAction("Index", "NewsArticles");
                     }
