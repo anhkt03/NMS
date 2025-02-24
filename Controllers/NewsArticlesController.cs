@@ -86,9 +86,9 @@ namespace NMS.Controllers
         // GET: NewsArticles/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
-            ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId");
-            ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId");
+            var user = HttpContext.Session.GetString("user");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName");
             return View();
         }
 
@@ -97,18 +97,33 @@ namespace NMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,CreatedById,UpdateById,ModifyDate")] NewsArticle newsArticle)
+        public async Task<IActionResult> Create([Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,ModifyDate")] NewsArticle newsArticle)
         {
             if (ModelState.IsValid)
             {
+
+                var userId = HttpContext.Session.GetString("userId");
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return RedirectToAction("Login", "Home");
+                }
+
+                newsArticle.CreatedById = int.Parse(userId);
+                newsArticle.CreateDate = DateTime.Now;
+
                 _context.Add(newsArticle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", newsArticle.CategoryId);
-            ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId", newsArticle.CreatedById);
-            ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId", newsArticle.UpdateById);
+
+            
+
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", newsArticle.CategoryId);
+            ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName", newsArticle.CreatedById);
+            ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName", newsArticle.UpdateById);
             return View(newsArticle);
+
         }
 
         // GET: NewsArticles/Edit/5
@@ -120,13 +135,31 @@ namespace NMS.Controllers
             }
 
             var newsArticle = await _context.NewsArticles.FindAsync(id);
+
+            var authorInfo = (from article in _context.NewsArticles
+                              join account in _context.SystemAccounts
+                              on article.CreatedById equals account.AccountId
+                              where article.NewsArticleId == id 
+                              select new
+                              {
+                                  AuthorName = account.AccountName,
+                                  AuthorId = account.AccountId
+                              }).FirstOrDefault();
+
+            if (authorInfo != null)
+            {
+                ViewBag.AuthorName = authorInfo.AuthorName; // Display author name in the view
+                ViewBag.CreatedById = authorInfo.AuthorId;  // Set author ID for form submission
+            }
+
+
             if (newsArticle == null)
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", newsArticle.CategoryId);
-            ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId", newsArticle.CreatedById);
-            ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId", newsArticle.UpdateById);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", newsArticle.CategoryId);
+            ViewBag.AuthorUpdate = HttpContext.Session.GetString("user");
+
             return View(newsArticle);
         }
 
@@ -135,7 +168,7 @@ namespace NMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,CreatedById,UpdateById,ModifyDate")] NewsArticle newsArticle)
+        public async Task<IActionResult> Edit(int id, [Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,CreatedById")] NewsArticle newsArticle)
         {
             if (id != newsArticle.NewsArticleId)
             {
@@ -146,6 +179,9 @@ namespace NMS.Controllers
             {
                 try
                 {
+                    newsArticle.ModifyDate = DateTime.Now;
+                    newsArticle.UpdateById = int.Parse(HttpContext.Session.GetString("userId"));
+
                     _context.Update(newsArticle);
                     await _context.SaveChangesAsync();
                 }
@@ -162,9 +198,9 @@ namespace NMS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", newsArticle.CategoryId);
-            ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId", newsArticle.CreatedById);
-            ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountId", newsArticle.UpdateById);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", newsArticle.CategoryId);
+            ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName", newsArticle.CreatedById);
+            ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName", newsArticle.UpdateById);
             return View(newsArticle);
         }
 

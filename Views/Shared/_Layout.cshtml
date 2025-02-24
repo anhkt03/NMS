@@ -32,25 +32,36 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="NewsArticles" asp-action="Index">News Article</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item">
-                            <span class="navbar-text">
-                                @if (user == null) 
-                                {
-                                    <button type="button"
-                                            style="margin-right:40px"
-                                            class="btn btn-primary"
-                                            data-mdb-ripple-init
-                                            onclick="window.location.href='@Url.Action("Login", "Home")'">
-                                        Login
-                                    </button>
-                                }
-                                <div class="fw-bold" style="margin-right: 40px">
-                                    @user
+                            @if (user == null)
+                            {
+                                <button type="button"
+                                        class="btn btn-primary me-3"
+                                        onclick="window.location.href='@Url.Action("Login", "Home")'">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center me-3">
+                                    <i class="bi bi-person-circle fs-4 me-2 text-primary"></i>
+                                    <span class="fw-bold text-dark">@user</span>
                                 </div>
-                            </span>
+                            }
                         </li>
+
+                        @if (user != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-outline-danger px-3"
+                                   asp-area="" asp-controller="Home" asp-action="Logout">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Log out
+                                </a>
+                            </li>
+                        }
                     </ul>
+
                 </div>
             </div>
         </nav>

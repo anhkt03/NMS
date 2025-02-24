@@ -59,8 +59,9 @@ namespace NMS.Controllers
                 var user = _context.SystemAccounts.FirstOrDefault(u => u.AccountEmail == account.AccountEmail && u.AccountPassword == account.AccountPassword);
                 if (user != null)
                 {
-                    HttpContext.Session.SetString("role", user.AccountRole.ToString());
+                    HttpContext.Session.SetString("role", user.AccountRole.ToString()); 
                     HttpContext.Session.SetString("user", user.AccountName.ToString());
+                    HttpContext.Session.SetString("userId", user.AccountId.ToString());
 
                     // staff
                     if (user.AccountRole == 1)
@@ -77,8 +78,12 @@ namespace NMS.Controllers
             }
 
             return View();
+        }
 
-            
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return View("Login");
         }
     }
 }

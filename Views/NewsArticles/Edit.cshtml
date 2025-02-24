@@ -25,7 +25,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" />
+                <input asp-for="CreateDate" class="form-control" readonly/>
                 <span asp-validation-for="CreateDate" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -39,7 +39,7 @@
                 <span asp-validation-for="NewsSource" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
+                <label asp-for="CategoryId" class="control-label">Category</label>
                 <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
@@ -49,20 +49,19 @@
                 <span asp-validation-for="NewsStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedById" class="control-label"></label>
-                <select asp-for="CreatedById" class="form-control" asp-items="ViewBag.CreatedById"></select>
-                <span asp-validation-for="CreatedById" class="text-danger"></span>
+                <label class="control-label">Author</label>
+                <input type="text" class="form-control" value="@ViewBag.AuthorName" readonly />
+
+                <!-- Hidden input to send the CreatedById to the controller -->
+                <input type="hidden" asp-for="CreatedById" />
             </div>
+
             <div class="form-group">
-                <label asp-for="UpdateById" class="control-label"></label>
-                <select asp-for="UpdateById" class="form-control" asp-items="ViewBag.UpdateById"></select>
+                <label asp-for="UpdateById" class="control-label">Author Update</label>
+                <input type="text" class="form-control" value="@ViewBag.AuthorUpdate" readonly/>
                 <span asp-validation-for="UpdateById" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ModifyDate" class="control-label"></label>
-                <input asp-for="ModifyDate" class="form-control" />
-                <span asp-validation-for="ModifyDate" class="text-danger"></span>
-            </div>
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

@@ -23,11 +23,6 @@
                 <span asp-validation-for="Headline" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" />
-                <span asp-validation-for="CreateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="NewsContent" class="control-label"></label>
                 <input asp-for="NewsContent" class="form-control" />
                 <span asp-validation-for="NewsContent" class="text-danger"></span>
@@ -45,19 +40,6 @@
                 <label asp-for="NewsStatus" class="control-label"></label>
                 <input asp-for="NewsStatus" class="form-control" />
                 <span asp-validation-for="NewsStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedById" class="control-label"></label>
-                <select asp-for="CreatedById" class ="form-control" asp-items="ViewBag.CreatedById"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdateById" class="control-label"></label>
-                <select asp-for="UpdateById" class ="form-control" asp-items="ViewBag.UpdateById"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifyDate" class="control-label"></label>
-                <input asp-for="ModifyDate" class="form-control" />
-                <span asp-validation-for="ModifyDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
