@@ -19,11 +19,48 @@ namespace NMS.Controllers
         }
 
         // GET: NewsArticles
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
-            var nmsContext = _context.NewsArticles.Include(n => n.Category).Include(n => n.CreatedBy).Include(n => n.UpdateBy);
-            return View(await nmsContext.ToListAsync());
+            var nmsContext = _context.NewsArticles
+                .Include(n => n.Category)
+                .Include(n => n.CreatedBy)
+                .Include(n => n.UpdateBy)
+                .Where(n => n.NewsStatus == true);
+
+            if (categoryId.HasValue)
+            {
+                nmsContext = nmsContext.Where(n => n.Category.CategoryId == categoryId.Value);
+                ViewBag.SelectedCategoryId = categoryId;
+            }
+
+            var newsArticles = await nmsContext
+                .Select(n => new NewsArticle
+                {
+                    NewsArticleId = n.NewsArticleId,
+                    CreateDate = n.CreateDate,
+                    Headline = n.Headline,
+                    NewsContent = n.NewsContent,
+                    NewsTitle = n.NewsTitle,
+                    Category = n.Category,
+                    CreatedBy = n.CreatedBy,
+                    Tags = n.Tags,
+                    NewsSource = n.NewsSource,
+                }).ToListAsync();
+
+            var categories = await _context.Categories
+                .Where(c => c.IsActive == true)
+                .Select(c => new Category
+                {
+                    CategoryName = c.CategoryName,
+                    CategoryId = c.CategoryId,
+                }).ToListAsync();
+
+            ViewBag.NewsArticles = newsArticles;
+            ViewBag.Category = categories;
+
+            return View(newsArticles);
         }
+
 
         // GET: NewsArticles/Details/5
         public async Task<IActionResult> Details(int? id)

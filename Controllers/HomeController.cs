@@ -59,12 +59,12 @@ namespace NMS.Controllers
                 var user = _context.SystemAccounts.FirstOrDefault(u => u.AccountEmail == account.AccountEmail && u.AccountPassword == account.AccountPassword);
                 if (user != null)
                 {
-                    HttpContext.Session.SetString("role", account.AccountRole.ToString());
+                    HttpContext.Session.SetString("role", user.AccountRole.ToString());
 
                     // staff
                     if(user.AccountRole == 1)
                     {
-                        return RedirectToAction("Home", "Staff");
+                        return RedirectToAction("Index", "NewsArticles");
                     }
 
                     // lecturer

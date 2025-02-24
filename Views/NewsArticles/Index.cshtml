@@ -1,89 +1,114 @@
 ﻿@model IEnumerable<NMS.Models.NewsArticle>
+@using Microsoft.AspNetCore.Http
+
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "News";
+    var categories = ViewBag.Category as IEnumerable<NMS.Models.Category>;
+    var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+    var userRole = Context.Session.GetString("role");
+    
+    
 }
 
-<h1>Index</h1>
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Headline)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsContent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsSource)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NewsStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModifyDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdateBy)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewsTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Headline)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewsContent)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewsSource)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NewsStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifyDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.CategoryId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.AccountId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateBy.AccountId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.NewsArticleId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.NewsArticleId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.NewsArticleId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<style>
+    img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .category-list {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .category-item {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .active-category {
+        background-color: #0d6efd;
+        color: white;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Latest News</h1>
+
+    @if(userRole == "1")
+    {
+        <p class="text-end">
+            <a class="btn btn-primary" asp-action="Create">Create New Article</a>
+        </p>
+    }
+
+    <!-- Horizontal Category Filter -->
+    <div class="category-list">
+        <a class="btn btn-outline-secondary category-item @(selectedCategoryId == null ? "active-category" : "")"
+           asp-action="Index">
+            All
+        </a>
+
+        @if (categories != null)
+        {
+            foreach (var category in categories)
+            {
+                <a class="btn btn-outline-secondary category-item @(selectedCategoryId == category.CategoryId ? "active-category" : "")"
+                   asp-action="Index"
+                   asp-route-categoryId="@category.CategoryId">
+                    @category.CategoryName
+                </a>
+            }
+        }
+    </div>
+
+    <!-- News Articles Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.NewsTitle</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <strong>Category: @item.Category?.CategoryName</strong> |
+                                By @item.CreatedBy?.AccountName |
+                                @item.CreateDate
+                            </small>
+                        </p>
+                        <p class="card-text"><strong>@item.Headline</strong></p>
+                        <p class="card-text">@item.NewsContent</p>
+                        <p class="img">
+                            <img src="@item.NewsSource" alt="@item.NewsTitle" />
+                        </p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a asp-action="Details" asp-route-id="@item.NewsArticleId" class="btn btn-outline-primary btn-sm">
+                            Read More
+                        </a>
+                        @if(userRole == "1")
+                        {
+                            <div>
+                                <a asp-action="Edit" asp-route-id="@item.NewsArticleId" class="btn btn-outline-secondary btn-sm">
+                                    Edit
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.NewsArticleId" class="btn btn-outline-danger btn-sm">
+                                    Delete
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
