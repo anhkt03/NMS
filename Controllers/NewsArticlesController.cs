@@ -87,7 +87,11 @@ namespace NMS.Controllers
         public IActionResult Create()
         {
             var user = HttpContext.Session.GetString("user");
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            var category = _context.Categories
+                .Where(c => c.IsActive == true)
+                .ToList();
+
+            ViewData["CategoryId"] = new SelectList(category, "CategoryId", "CategoryName");
             ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName");
             return View();
         }

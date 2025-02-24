@@ -77,7 +77,7 @@ namespace NMS.Controllers
                 }
                 else
                 {
-                    ViewBag.Error = "Invalid Account, Go To News Article to view as Guest";
+                    ViewBag.Message = "Invalid Account, Go To News Article to view as Guest";
                 }
             }
 

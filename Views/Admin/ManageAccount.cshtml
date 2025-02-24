@@ -30,6 +30,7 @@
                 <td>@account.AccountPassword</td>
                 <td>@(account.AccountRole == 1 ? "Staff" : account.AccountRole == 2 ? "Lecturer" : "Unknown")</td>
                 <td>
+                    <a href="@Url.Action("Details", "SystemAccounts", new { id = account.AccountId })" class="btn btn-sm btn-success">Details</a>
                     <a href="@Url.Action("Edit", "SystemAccounts", new { id = account.AccountId })" class="btn btn-sm btn-warning">Edit</a>
                     <a href="@Url.Action("Delete", "SystemAccounts", new { id = account.AccountId })" class="btn btn-sm btn-danger"
                        onclick="return confirm('Are you sure you want to delete this account?');">Delete</a>

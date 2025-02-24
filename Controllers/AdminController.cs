@@ -27,5 +27,10 @@ namespace NMS.Controllers
         {
             return View(await _context.SystemAccounts.ToListAsync());
         }
+
+        public async Task<IActionResult> ManageCategory()
+        {
+            return View(await _context.Categories.ToListAsync());
+        }
     }
 }

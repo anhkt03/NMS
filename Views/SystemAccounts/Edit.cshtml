@@ -28,9 +28,9 @@
             <div class="form-group">
                 <label asp-for="AccountRole" class="control-label">Account Role</label>
                 <select asp-for="AccountRole" class="form-control" asp-items="@(new SelectList(new[] {
-        new { Value = "1", Text = "Staff" },
-        new { Value = "2", Text = "Lecturer" }
-    }, "Value", "Text"))">
+                    new { Value = "1", Text = "Staff" },
+                    new { Value = "2", Text = "Lecturer" }
+                }, "Value", "Text"))">
                 </select>
                 <span asp-validation-for="AccountRole" class="text-danger"></span>
             </div>
