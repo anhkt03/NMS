@@ -75,6 +75,10 @@ namespace NMS.Controllers
                         return RedirectToAction("Index", "NewsArticles");
                     }
                 }
+                else
+                {
+                    ViewBag.Error = "Invalid Account, Go To News Article to view as Guest";
+                }
             }
 
             return View();
