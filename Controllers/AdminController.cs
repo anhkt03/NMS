@@ -32,5 +32,10 @@ namespace NMS.Controllers
         {
             return View(await _context.Categories.ToListAsync());
         }
+
+        public async Task<IActionResult> ManageTag()
+        {
+            return View(await _context.Tags.ToListAsync());
+        }
     }
 }
