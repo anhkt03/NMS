@@ -19,7 +19,7 @@ namespace NMS.Controllers
         }
 
         // GET: NewsArticles
-        public async Task<IActionResult> Index(int? categoryId, int? tag)
+        public async Task<IActionResult> Index(int? categoryId, int? tag, int? createdById)
         {
             var nmsContext = _context.NewsArticles
                 .Include(n => n.Category)
@@ -38,6 +38,12 @@ namespace NMS.Controllers
             {
                 nmsContext = nmsContext.Where(n => n.Tags.Any(t => t.TagId == tag.Value));
                 ViewBag.SelectedTagId = tag;
+            }
+
+            if (createdById.HasValue)
+            {
+                nmsContext = nmsContext.Where(n => n.CreatedBy.AccountId == createdById.Value);
+                ViewBag.SelectedCreatedById = createdById;
             }
 
             var newsArticles = await nmsContext
@@ -69,9 +75,18 @@ namespace NMS.Controllers
                     CategoryId = c.CategoryId,
                 }).ToListAsync();
 
+            var staffList = await _context.SystemAccounts
+                .Where(s => s.AccountRole == 1)
+                .Select(s => new SystemAccount
+                {
+                    AccountId = s.AccountId,
+                    AccountName = s.AccountName
+                }).ToListAsync();
+
             ViewBag.NewsArticles = newsArticles;
             ViewBag.Category = categories;
             ViewBag.Tags = tags;
+            ViewBag.StaffList = staffList;
 
             return View(newsArticles);
         }

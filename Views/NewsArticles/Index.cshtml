@@ -137,6 +137,36 @@
         </div>
     </div>
 
+    @if(userRole == "1")
+    {
+        <div class="d-flex align-items-center mb-3">
+            <div class="me-3 fw-bold">
+                Staff:
+            </div>
+            <div class="d-flex flex-nowrap overflow-auto">
+                <!-- "All" Staff Button -->
+                <a class="btn btn-outline-secondary me-2 @(ViewBag.SelectedCreatedById == null ? "active-category" : "")"
+                   asp-action="Index">
+                    All
+                </a>
+
+                <!-- Dynamically Generated Staff Buttons -->
+                @if (ViewBag.StaffList != null)
+                {
+                    foreach (var staff in ViewBag.StaffList)
+                    {
+                        <a class="btn btn-outline-secondary me-2 @(ViewBag.SelectedCreatedById == staff.AccountId ? "active-category" : "")"
+                           asp-action="Index"
+                           asp-route-createdById="@staff.AccountId">
+                            @staff.AccountName
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    }
+
+
     <!-- News Articles Grid -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var item in Model)

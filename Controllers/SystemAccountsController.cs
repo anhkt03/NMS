@@ -87,6 +87,7 @@ namespace NMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AccountId,AccountName,AccountEmail,AccountRole,AccountPassword")] SystemAccount systemAccount)
         {
+            var roleId = HttpContext.Session.GetString("role");
             if (id != systemAccount.AccountId)
             {
                 return NotFound();
@@ -96,6 +97,10 @@ namespace NMS.Controllers
             {
                 try
                 {
+                    if(roleId == "1")
+                    {
+                        systemAccount.AccountRole = 1;
+                    }
                     _context.Update(systemAccount);
                     await _context.SaveChangesAsync();
                 }
@@ -110,7 +115,14 @@ namespace NMS.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("ManageAccount", "Admin");
+                if(roleId == "1")
+                {
+                    return RedirectToAction("Index", "NewsArticles");
+                }
+                else
+                {
+                    return RedirectToAction("ManageAccount", "Admin");
+                }
             }
             return RedirectToAction("ManageAccount", "Admin");
         }

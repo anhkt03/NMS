@@ -1,5 +1,7 @@
 ﻿@{
     var user = @Context.Session.GetString("user");
+    var roleId = Context.Session.GetString("role");
+    var userId = Context.Session.GetString("userId");
 }
 
 <!DOCTYPE html>
@@ -11,6 +13,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/NMS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/font-awesome/css/all.min.css"/>
 </head>
 <body>
     @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
@@ -52,6 +55,12 @@
                             else
                             {
                                 <div class="d-flex align-items-center me-3">
+                                    @if(roleId == "1")
+                                    {
+                                        <div>
+                                            <button onclick="goToSetting(@userId)" class="btn btn-dark"><i class="fa-solid fa-bars"></i></button>
+                                        </div>
+                                    }
                                     <i class="bi bi-person-circle fs-4 me-2 text-primary"></i>
                                     <span class="fw-bold text-dark">@user</span>
                                 </div>
@@ -88,6 +97,11 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function goToSetting(userId) {
+            window.location.href = `/SystemAccounts/Edit/${userId}`;
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
