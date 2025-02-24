@@ -74,6 +74,7 @@ namespace NMS.Controllers
                 .Include(n => n.Category)
                 .Include(n => n.CreatedBy)
                 .Include(n => n.UpdateBy)
+                .Include(t => t.Tags)
                 .FirstOrDefaultAsync(m => m.NewsArticleId == id);
             if (newsArticle == null)
             {
@@ -91,8 +92,11 @@ namespace NMS.Controllers
                 .Where(c => c.IsActive == true)
                 .ToList();
 
+            var tags = _context.Tags.ToList();
+
             ViewData["CategoryId"] = new SelectList(category, "CategoryId", "CategoryName");
             ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName");
+            ViewBag.Tags = tags;
             return View();
         }
 
@@ -101,7 +105,7 @@ namespace NMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,ModifyDate")] NewsArticle newsArticle)
+        public async Task<IActionResult> Create([Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,ModifyDate")] NewsArticle newsArticle, List<int> SelectedTagIds)
         {
             if (ModelState.IsValid)
             {
@@ -115,6 +119,13 @@ namespace NMS.Controllers
 
                 newsArticle.CreatedById = int.Parse(userId);
                 newsArticle.CreateDate = DateTime.Now;
+
+                if (SelectedTagIds != null && SelectedTagIds.Any())
+                {
+                    newsArticle.Tags = _context.Tags
+                        .Where(t => SelectedTagIds.Contains(t.TagId))
+                        .ToList();
+                }
 
                 _context.Add(newsArticle);
                 await _context.SaveChangesAsync();
@@ -138,7 +149,19 @@ namespace NMS.Controllers
                 return NotFound();
             }
 
-            var newsArticle = await _context.NewsArticles.FindAsync(id);
+            var newsArticle = await _context.NewsArticles
+                .Include(t => t.Tags)
+                .FirstOrDefaultAsync(n => n.NewsArticleId == id);
+
+            var allTags = await _context.Tags.ToListAsync();
+            var selectedTagIds = newsArticle.Tags.Select(t => t.TagId).ToList();
+
+            ViewBag.Tags = allTags.Select(tag => new
+            {
+                tag.TagId,
+                tag.TagName,
+                IsChecked = selectedTagIds.Contains(tag.TagId)
+            }).ToList();
 
             var authorInfo = (from article in _context.NewsArticles
                               join account in _context.SystemAccounts

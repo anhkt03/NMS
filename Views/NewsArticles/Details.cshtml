@@ -41,9 +41,22 @@
             </p>
 
             <p>
-                <dt class="col-sm-3"><strong>Tags:</strong></dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Tags)</dd>
+            <span class="col-sm-3"><strong>Tags:</strong></span>
+            <span class="col-sm-9">
+                    @if (Model.Tags != null && Model.Tags.Any())
+                    {
+                        @foreach (var tag in Model.Tags)
+                        {
+                        <span class="badge bg-primary me-1">@tag.TagName</span>
+                        }
+                    }
+                    else
+                    {
+                    <span class="text-muted">No tags available</span>
+                    }
+            </span>
             </p>
+
 
             <hr />
 

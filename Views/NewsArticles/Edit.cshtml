@@ -65,6 +65,25 @@
                 <span asp-validation-for="NewsStatus" class="text-danger"></span>
             </div>
 
+            <div class="form-group">
+                <label><strong>Tags:</strong></label><br />
+                @foreach (var tag in ViewBag.Tags)
+                {
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="SelectedTagIds"
+                               value="@tag.TagName"
+                               id="tag_@tag.TagId"
+                        @(tag.IsChecked ? "checked" : "") />
+                        <label class="form-check-label" for="tag_@tag.TagId">
+                            @tag.TagName
+                        </label>
+                    </div>
+                }
+            </div>
+
+
 
             <!-- Save Button to show the confirmation modal -->
             <div class="form-group" style="margin-top: 20px">
