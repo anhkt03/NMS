@@ -257,15 +257,21 @@ namespace NMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var newsArticle = await _context.NewsArticles.FindAsync(id);
+            var newsArticle = await _context.NewsArticles
+                .Include(n => n.Tags) 
+                .FirstOrDefaultAsync(n => n.NewsArticleId == id);
+
             if (newsArticle != null)
             {
+                newsArticle.Tags.Clear();
                 _context.NewsArticles.Remove(newsArticle);
+
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool NewsArticleExists(int id)
         {
