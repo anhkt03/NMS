@@ -58,10 +58,19 @@ namespace NMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CategoryId,CategoryName,CategoryDescription,ParentCategoryId,IsActive")] Category category)
         {
+            var roleId = HttpContext.Session.GetString("role");
             _context.Add(category);
             await _context.SaveChangesAsync();
             ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", category.ParentCategoryId);
-            return RedirectToAction("ManageCategory", "Admin");
+            
+            if(roleId == "1")
+            {
+                return RedirectToAction("Index", "Categories");
+            }
+            else
+            {
+                return RedirectToAction("ManageCategory", "Admin");
+            }
         }
 
         // GET: Categories/Edit/5
@@ -88,6 +97,8 @@ namespace NMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,CategoryDescription,ParentCategoryId,IsActive")] Category category)
         {
+            var roleId = HttpContext.Session.GetString("role");
+
             if (id != category.CategoryId)
             {
                 return NotFound();
@@ -109,10 +120,16 @@ namespace NMS.Controllers
                     throw;
                 }
             }
-            return RedirectToAction("ManageCategory", "Admin");
 
             ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", category.ParentCategoryId);
-            return RedirectToAction("ManageCategory", "Admin");
+            if (roleId == "1")
+            {
+                return RedirectToAction("Index", "Categories");
+            }
+            else
+            {
+                return RedirectToAction("ManageCategory", "Admin");
+            }
         }
 
         // GET: Categories/Delete/5
@@ -140,14 +157,37 @@ namespace NMS.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var roleId = HttpContext.Session.GetString("role");
+
+            if (category == null)
             {
-                _context.Categories.Remove(category);
+                TempData["ErrorMessage"] = "Category not found!";
+                return RedirectToAction("Index", "Categories");
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction("ManageCategory", "Admin");
+            // Check if the category is in use (e.g., by News Articles)
+            bool isCategoryInUse = await _context.NewsArticles
+                .AnyAsync(n => n.CategoryId == id);
 
+            if (isCategoryInUse)
+            {
+                TempData["ErrorMessage"] = "Cannot delete this category. It is currently in use!";
+                return RedirectToAction("Delete", "Categories");
+            }
+
+            // Safe to delete
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Category deleted successfully!";
+            if(roleId == "1")
+            {
+                return RedirectToAction("Index", "Categories");
+            }
+            else
+            {
+                return RedirectToAction("ManageCategory", "Admin");
+            }
         }
 
         private bool CategoryExists(int id)

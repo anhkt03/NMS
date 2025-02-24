@@ -31,15 +31,11 @@
                         <li class="nav-item">
                             @if(user == "Admin FU")
                             {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Home">Home</a>
-                            }
-                            else
-                            {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link active text-dark btn btn-info" style="margin-right: 20px" asp-area="" asp-controller="Admin" asp-action="Home">Home</a>
                             }
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="NewsArticles" asp-action="Index">News Article</a>
+                            <a class="nav-link active text-dark btn btn-success" asp-area="" asp-controller="NewsArticles" asp-action="Index">News Article</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav ms-auto align-items-center">
@@ -57,6 +53,9 @@
                                 <div class="d-flex align-items-center me-3">
                                     @if(roleId == "1")
                                     {
+                                        <div style="margin-right: 30px">
+                                            <button onclick="goToManageCategory()" type="button" class="btn btn-warning" data-mdb-ripple-init>Manage Category</button>
+                                        </div>
                                         <div>
                                             <button onclick="goToSetting(@userId)" class="btn btn-dark"><i class="fa-solid fa-bars"></i></button>
                                         </div>
@@ -100,6 +99,10 @@
     <script>
         function goToSetting(userId) {
             window.location.href = `/SystemAccounts/Edit/${userId}`;
+        }
+
+        function goToManageCategory() {
+            window.location.href = `/Categories/Index`;
         }
     </script>
     @await RenderSectionAsync("Scripts", required: false)
