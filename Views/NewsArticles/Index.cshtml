@@ -23,20 +23,42 @@
     }
 
     .category-list {
-        overflow-x: auto;
-        white-space: nowrap;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
+        padding-bottom: 8px;
     }
 
+    /* Category Buttons */
     .category-item {
-        display: inline-block;
-        margin-right: 10px;
+        border-radius: 20px;
+        transition: all 0.2s;
+        white-space: nowrap;
     }
 
+    /* Active Category Styling */
     .active-category {
         background-color: #0d6efd;
+        color: white !important;
+        border-color: #0d6efd;
+    }
+
+    /* Hover Effect */
+    .category-item:hover {
+        background-color: #0d6efd;
         color: white;
+        border-color: #0d6efd;
+    }
+
+    /* Smooth Scroll Bar */
+    .category-list::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .category-list::-webkit-scrollbar-thumb {
+        background-color: #c0c0c0;
+        border-radius: 10px;
+    }
+
+    .category-list::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
     }
 </style>
 
@@ -50,24 +72,31 @@
         </p>
     }
 
-    <!-- Horizontal Category Filter -->
-    <div class="category-list">
-        <a class="btn btn-outline-secondary category-item @(selectedCategoryId == null ? "active-category" : "")"
-           asp-action="Index">
-            All
-        </a>
+    
+    <div class="d-flex align-items-center mb-3">
+        <div class="me-3 fw-bold">
+            Category:
+        </div>
+        <div class="category-list d-flex flex-nowrap overflow-auto">
+            <!-- "All" Category Button -->
+            <a class="btn btn-outline-secondary me-2 category-item @(selectedCategoryId == null ? "active-category" : "")"
+               asp-action="Index">
+                All
+            </a>
 
-        @if (categories != null)
-        {
-            foreach (var category in categories)
+            <!-- Dynamically Generated Category Buttons -->
+            @if (categories != null)
             {
-                <a class="btn btn-outline-secondary category-item @(selectedCategoryId == category.CategoryId ? "active-category" : "")"
-                   asp-action="Index"
-                   asp-route-categoryId="@category.CategoryId">
-                    @category.CategoryName
-                </a>
+                foreach (var category in categories)
+                {
+                    <a class="btn btn-outline-secondary me-2 category-item @(selectedCategoryId == category.CategoryId ? "active-category" : "")"
+                       asp-action="Index"
+                       asp-route-categoryId="@category.CategoryId">
+                        @category.CategoryName
+                    </a>
+                }
             }
-        }
+        </div>
     </div>
 
     <!-- News Articles Grid -->
