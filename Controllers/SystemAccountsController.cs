@@ -59,9 +59,9 @@ namespace NMS.Controllers
             {
                 _context.Add(systemAccount);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("ManageAccount", "Admin");
             }
-            return View(systemAccount);
+            return RedirectToAction("ManageAccount", "Admin");
         }
 
         // GET: SystemAccounts/Edit/5
@@ -110,9 +110,9 @@ namespace NMS.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("ManageAccount", "Admin");
             }
-            return View(systemAccount);
+            return RedirectToAction("ManageAccount", "Admin");
         }
 
         // GET: SystemAccounts/Delete/5
@@ -145,7 +145,7 @@ namespace NMS.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("ManageAccount", "Admin");
         }
 
         private bool SystemAccountExists(int id)

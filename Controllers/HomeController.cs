@@ -46,13 +46,13 @@ namespace NMS.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(SystemAccount account)
         {
-            string defaultEmail = _configuration["DefaultAccount: Email"];
-            string defaultPass = _configuration["DefaultAccount: Password"];
+            string defaultEmail = _configuration["DefaultAccount:Email"];
+            string defaultPass = _configuration["DefaultAccount:Password"];
 
             if (account.AccountEmail == defaultEmail && account.AccountPassword == defaultPass)
             {
-                HttpContext.Session.SetString("role", account.AccountRole.ToString());
-                return Index();
+                HttpContext.Session.SetString("user", "Admin FU");
+                return RedirectToAction("Home", "Admin");
             }
             else
             {
