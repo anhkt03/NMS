@@ -59,9 +59,9 @@ namespace NMS.Controllers
             {
                 _context.Add(systemAccount);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("ManageAccount", "Admin");
             }
-            return View(systemAccount);
+            return RedirectToAction("ManageAccount", "Admin");
         }
 
         // GET: SystemAccounts/Edit/5
@@ -87,6 +87,7 @@ namespace NMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AccountId,AccountName,AccountEmail,AccountRole,AccountPassword")] SystemAccount systemAccount)
         {
+            var roleId = HttpContext.Session.GetString("role");
             if (id != systemAccount.AccountId)
             {
                 return NotFound();
@@ -96,6 +97,10 @@ namespace NMS.Controllers
             {
                 try
                 {
+                    if(roleId == "1")
+                    {
+                        systemAccount.AccountRole = 1;
+                    }
                     _context.Update(systemAccount);
                     await _context.SaveChangesAsync();
                 }
@@ -110,9 +115,16 @@ namespace NMS.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                if(roleId == "1")
+                {
+                    return RedirectToAction("Index", "NewsArticles");
+                }
+                else
+                {
+                    return RedirectToAction("ManageAccount", "Admin");
+                }
             }
-            return View(systemAccount);
+            return RedirectToAction("ManageAccount", "Admin");
         }
 
         // GET: SystemAccounts/Delete/5
@@ -145,7 +157,7 @@ namespace NMS.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("ManageAccount", "Admin");
         }
 
         private bool SystemAccountExists(int id)

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<NMS.Models.Tag>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Manage Tags";
+}
+
+<h2>Manage Tags</h2>
+<a href="@Url.Action("Create", "Tags")" class="btn btn-sm btn-success">Add</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tag ID</th>
+            <th>Tag Name</th>
+            <th>Note</th>
+            <th>Action</th>
+    </thead>
+    <tbody>
+        @foreach (var tag in Model)
+        {
+            <tr>
+                <td>@tag.TagId</td>
+                <td>@tag.TagName</td>
+                <td>@tag.Note</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Tags", new { id = tag.TagId })" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="@Url.Action("Delete", "Tags", new { id = tag.TagId })" class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure you want to delete this account?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

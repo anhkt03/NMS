@@ -1,53 +1,63 @@
 ﻿@model IEnumerable<NMS.Models.Category>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Manage Categories";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark">Manage Categories</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus me-2"></i>Create New Category
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ParentCategory)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParentCategory.CategoryId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Category Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Parent Category</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CategoryName</td>
+                    <td>@item.CategoryDescription</td>
+                    <td>
+                        @if (item.IsActive)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                    </td>
+                    <td>@(item.ParentCategory?.CategoryName ?? "None")</td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.CategoryId"
+                           class="btn btn-sm btn-warning me-1" title="Edit">
+                            <i class="fa-solid fa-edit"></i>
+                        </a>
+
+                        <a asp-action="Details" asp-route-id="@item.CategoryId"
+                           class="btn btn-sm btn-info me-1 text-white" title="Details">
+                            <i class="fa-solid fa-info-circle"></i>
+                        </a>
+
+                        <a asp-action="Delete" asp-route-id="@item.CategoryId"
+                           class="btn btn-sm btn-danger" title="Delete"
+                           onclick="return confirm('Are you sure you want to delete this category?');">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

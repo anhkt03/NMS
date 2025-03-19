@@ -2,6 +2,16 @@
 
 @{
     ViewData["Title"] = "Details";
+    var roleId = Context.Session.GetString("role");
+}
+
+@if (roleId == "1")
+{
+    <a asp-action="Index" asp-controller="NewsArticles" class="btn btn-secondary bg-info">Back to News</a>
+}
+else
+{
+    <a asp-action="ManageCategory" asp-controller="Admin" class="btn btn-secondary bg-info">Back to List</a>
 }
 
 <h1>Details</h1>
@@ -37,6 +47,5 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.CategoryId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.CategoryId" class="btn btn-outline-info">Edit</a>
 </div>

@@ -1,0 +1,64 @@
+﻿@model IEnumerable<NMS.Models.NewsArticle>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Report Statistic";
+}
+
+
+<h2>Report Statistic</h2>
+
+<!-- 📅 Date Filter Form -->
+<form method="get" asp-action="Home" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <!-- Start Date Input -->
+        <div class="col-md-3">
+            <label for="startDate" class="form-label">Start Date:</label>
+            <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+        </div>
+
+        <!-- End Date Input -->
+        <div class="col-md-3">
+            <label for="endDate" class="form-label">End Date:</label>
+            <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+        </div>
+
+        <!-- Filter Button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+
+        <!-- Empty Space to Push Export Button to the End -->
+        <div class="col-md-auto ms-auto">
+            <button type="button" class="btn btn-success w-100"
+                    asp-action="ExportToExcel"
+                    asp-route-startDate="@ViewBag.StartDate"
+                    asp-route-endDate="@ViewBag.EndDate">
+                Export Excel
+            </button>
+        </div>
+    </div>
+</form>
+
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Created By</th>
+            <th>Create Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var article in Model)
+        {
+            <tr>
+                <td>@article.NewsTitle</td>
+                <td>@article.Category?.CategoryName</td>
+                <td>@article.CreatedBy?.AccountName</td>
+                <td>@article.CreateDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
