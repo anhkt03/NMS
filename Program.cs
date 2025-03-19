@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NMS.Models;
+using NMS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -38,5 +40,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=NewsArticles}/{action=Index}/{id?}");
+app.MapHub<SignalRService>("/signalRService");
 
 app.Run();

@@ -4,21 +4,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NMS.Models;
+using NMS.Services;
+using NuGet.Packaging;
 
 namespace NMS.Controllers
 {
     public class NewsArticlesController : Controller
     {
         private readonly NmsContext _context;
+        private readonly IHubContext<SignalRService> _signalRHub;
 
-        public NewsArticlesController(NmsContext context)
+        public NewsArticlesController(NmsContext context, IHubContext<SignalRService> hubContext)
         {
             _context = context;
+            _signalRHub = hubContext;
         }
 
         // GET: NewsArticles
+        [HttpGet]
         public async Task<IActionResult> Index(int? categoryId, int? tag, int? createdById)
         {
             var nmsContext = _context.NewsArticles
@@ -159,6 +165,7 @@ namespace NMS.Controllers
 
                 _context.Add(newsArticle);
                 await _context.SaveChangesAsync();
+                await _signalRHub.Clients.All.SendAsync("LoadNewsArticle");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -225,7 +232,10 @@ namespace NMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,CreatedById")] NewsArticle newsArticle)
+        public async Task<IActionResult> Edit(
+    int id,
+    [Bind("NewsArticleId,NewsTitle,Headline,CreateDate,NewsContent,NewsSource,CategoryId,NewsStatus,CreatedById")] NewsArticle newsArticle,
+    List<int> SelectedTagIds)
         {
             if (id != newsArticle.NewsArticleId)
             {
@@ -236,11 +246,39 @@ namespace NMS.Controllers
             {
                 try
                 {
-                    newsArticle.ModifyDate = DateTime.Now;
-                    newsArticle.UpdateById = int.Parse(HttpContext.Session.GetString("userId"));
+                    var existingNews = await _context.NewsArticles
+                        .Include(n => n.Tags)
+                        .FirstOrDefaultAsync(n => n.NewsArticleId == id);
 
-                    _context.Update(newsArticle);
+                    if (existingNews == null)
+                    {
+                        return NotFound();
+                    }
+
+                    
+                    existingNews.NewsTitle = newsArticle.NewsTitle;
+                    existingNews.Headline = newsArticle.Headline;
+                    existingNews.CreateDate = newsArticle.CreateDate;
+                    existingNews.NewsContent = newsArticle.NewsContent;
+                    existingNews.NewsSource = newsArticle.NewsSource;
+                    existingNews.CategoryId = newsArticle.CategoryId;
+                    existingNews.NewsStatus = newsArticle.NewsStatus;
+                    existingNews.ModifyDate = DateTime.Now;
+                    existingNews.UpdateById = int.Parse(HttpContext.Session.GetString("userId"));
+
+                    existingNews.Tags.Clear();
+
+                    var newTags = await _context.Tags
+                        .Where(t => SelectedTagIds.Contains(t.TagId))
+                        .ToListAsync();
+
+                    existingNews.Tags.AddRange(newTags);
+
                     await _context.SaveChangesAsync();
+
+                    await _signalRHub.Clients.All.SendAsync("LoadNewsArticle");
+
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -253,12 +291,27 @@ namespace NMS.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", newsArticle.CategoryId);
             ViewData["CreatedById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName", newsArticle.CreatedById);
             ViewData["UpdateById"] = new SelectList(_context.SystemAccounts, "AccountId", "AccountName", newsArticle.UpdateById);
+
             return View(newsArticle);
+        }
+
+
+        private void UpdateNewsTags(NewsArticle newsArticle, List<int> listTag)
+        {
+
+            foreach (var newTag in listTag)
+            {
+                var tag = _context.Tags.FirstOrDefault(t => t.TagId == newTag);
+                if (tag != null)
+                {
+                    newsArticle.Tags.Add(tag);
+                }
+            }
         }
 
         // GET: NewsArticles/Delete/5
@@ -297,6 +350,7 @@ namespace NMS.Controllers
                 _context.NewsArticles.Remove(newsArticle);
 
                 await _context.SaveChangesAsync();
+                await _signalRHub.Clients.All.SendAsync("LoadNewsArticle");
             }
 
             return RedirectToAction(nameof(Index));

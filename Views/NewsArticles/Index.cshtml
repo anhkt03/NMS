@@ -88,10 +88,11 @@
         <div class="me-3 fw-bold">
             Category:
         </div>
-        <div class="category-list d-flex flex-nowrap overflow-auto">
+        <div class="category-list d-flex flex-nowrap overflow-auto" id="categoryFilter">
             <!-- "All" Category Button -->
             <a class="btn btn-outline-secondary me-2 category-item @(selectedCategoryId == null ? "active-category" : "")"
-               asp-action="Index">
+               asp-action="Index"
+               data-category-id="">
                 All
             </a>
 
@@ -102,7 +103,8 @@
                 {
                     <a class="btn btn-outline-secondary me-2 category-item @(selectedCategoryId == category.CategoryId ? "active-category" : "")"
                        asp-action="Index"
-                       asp-route-categoryId="@category.CategoryId">
+                       asp-route-categoryId="@category.CategoryId"
+                       data-category-id="@category.CategoryId">
                         @category.CategoryName
                     </a>
                 }
@@ -117,7 +119,8 @@
             <a class="btn btn-outline-secondary me-2 tag-item @(ViewBag.SelectedTagId == null ? "active-tag" : "")"
                asp-action="Index"
                asp-route-tag=""
-               asp-route-categoryId="@ViewBag.SelectedCategoryId">
+               asp-route-categoryId="@ViewBag.SelectedCategoryId"
+               data-tag-id="">
                 All
             </a>
 
@@ -129,7 +132,8 @@
                     <a class="btn btn-outline-secondary me-2 tag-item @(ViewBag.SelectedTagId == tag.TagId ? "active-tag" : "")"
                        asp-action="Index"
                        asp-route-tag="@tag.TagId"
-                       asp-route-categoryId="@ViewBag.SelectedCategoryId">
+                       asp-route-categoryId="@ViewBag.SelectedCategoryId"
+                       data-tag-id="@tag.TagId">
                         @tag.TagName
                     </a>
                 }
@@ -146,7 +150,8 @@
             <div class="d-flex flex-nowrap overflow-auto">
                 <!-- "All" Staff Button -->
                 <a class="btn btn-outline-secondary me-2 @(ViewBag.SelectedCreatedById == null ? "active-category" : "")"
-                   asp-action="Index">
+                   asp-action="Index"
+                   data-staff-id="">
                     All
                 </a>
 
@@ -157,7 +162,8 @@
                     {
                         <a class="btn btn-outline-secondary me-2 @(ViewBag.SelectedCreatedById == staff.AccountId ? "active-category" : "")"
                            asp-action="Index"
-                           asp-route-createdById="@staff.AccountId">
+                           asp-route-createdById="@staff.AccountId"
+                           data-staff-id="@staff.AccountId">
                             @staff.AccountName
                         </a>
                     }
@@ -168,7 +174,7 @@
 
 
     <!-- News Articles Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div id="newsContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var item in Model)
         {
             <div class="col">
@@ -225,3 +231,5 @@
         }
     </div>
 </div>
+<script src="~/js/site.js"></script>
+<script src="~/microsoft/signalr/dist/browser/signalr.js"></script>
